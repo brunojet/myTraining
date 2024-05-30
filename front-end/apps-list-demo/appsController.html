@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html ng-app="appsModule">
+
+<head>
+    <meta charset="UTF-8">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.8.2/angular.min.js"></script>
+    <script src="./appsController.js"></script>
+    <style>
+        .subCategories {
+            display: none;
+            margin-left: 20px;
+        }
+
+        .expanded {
+            display: block;
+        }
+    </style>
+</head>
+
+<body ng-controller="appsController">
+    <h2>Categorias:</h2>
+    <ul>
+        <li ng-repeat="category in data.categories">
+            <button ng-click="toggleCategory(category)">{{category.name}}</button>
+            <ul class="subCategories" ng-class="{'expanded': category.expanded}">
+                <li ng-repeat="subCategory in subCategories">
+                    <button ng-click="filterBySubCategory(subCategory)">{{subCategory.name}}</button>
+                </li>
+            </ul>
+        </li>
+    </ul>
+
+    <h2>Aplicativos:</h2>
+    <ul>
+        <li ng-repeat="app in data.apps | filter: filterApps">
+            {{app.name}} - {{app.desenvolvedor}}
+        </li>
+    </ul>
+</body>
+
+</html>
