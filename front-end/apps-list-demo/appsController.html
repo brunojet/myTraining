@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.8.2/angular.min.js"></script>
+    <script src="./appsData.js"></script>
     <script src="./appsController.js"></script>
     <style>
         .subCategories {
@@ -14,26 +15,89 @@
         .expanded {
             display: block;
         }
+
+        /* Estilos adicionais para uma aparência mais visual */
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 10px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li {
+            margin: 5px 0;
+        }
+
+        hr {
+            border: 0;
+            height: 1px;
+            background: #333;
+            margin: 10px 0;
+        }
+
+        /* Estilos para a barra de navegação */
+        .navbar {
+            overflow: hidden;
+            background-color: #333;
+        }
+
+        .navbar a {
+            float: left;
+            display: block;
+            color: #f2f2f2;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+        }
+
+        .navbar a:hover {
+            background-color: #ddd;
+            color: black;
+        }
     </style>
 </head>
 
 <body ng-controller="appsController">
-    <h2>Categorias:</h2>
-    <ul>
-        <li ng-repeat="category in data.categories">
-            <button ng-click="toggleCategory(category)">{{category.name}}</button>
-            <ul class="subCategories" ng-class="{'expanded': category.expanded}">
-                <li ng-repeat="subCategory in page.subCategories">
-                    <button ng-click="filterBySubCategory(subCategory)">{{subCategory.name}}</button>
-                </li>
-            </ul>
-        </li>
+    <div class="navbar">
+        <a href="#" ng-click="setTab('highlights')">Destaques</a>
+        <a href="#" ng-click="setTab('recommended')">Recomendados</a>
+    </div>
+
+    <ul ng-show="page.showCategory">
+        <h2>Categorias:</h2>
+        <ul>
+            <li ng-repeat="category in data.categories">
+                <button ng-click="toggleCategory(category)">{{category.name}}</button>
+                <ul class="subCategories" ng-class="{'expanded': category.expanded}">
+                    <li ng-repeat="subCategory in page.subCategories">
+                        <button ng-click="filterBySubCategory(subCategory)">{{subCategory.name}}</button>
+                    </li>
+                </ul>
+                <hr>
+            </li>
+        </ul>
     </ul>
 
     <h2>Aplicativos:</h2>
     <ul>
         <li ng-repeat="app in data.apps | filter: filterApps">
-            {{app.name}} - {{app.desenvolvedor}}
+            {{app.name}} <br /> {{app.desenvolvedor}}
+            <hr>
         </li>
     </ul>
 </body>
