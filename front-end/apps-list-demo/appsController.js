@@ -158,6 +158,8 @@ angular.module('appsModule', [])
         } else {
           return isSameSubCategory(app, $scope.page.subCategory);
         }
+      } else {
+        return false;
       }
     };
   });
