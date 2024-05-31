@@ -23,7 +23,7 @@
         <li ng-repeat="category in data.categories">
             <button ng-click="toggleCategory(category)">{{category.name}}</button>
             <ul class="subCategories" ng-class="{'expanded': category.expanded}">
-                <li ng-repeat="subCategory in subCategories">
+                <li ng-repeat="subCategory in page.subCategories">
                     <button ng-click="filterBySubCategory(subCategory)">{{subCategory.name}}</button>
                 </li>
             </ul>

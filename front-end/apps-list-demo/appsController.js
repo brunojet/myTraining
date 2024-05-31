@@ -10,10 +10,6 @@ angular.module('appsModule', [])
       ],
       "subCategories": [
         {
-          "name": "Mais baixados",
-          "category": "Jogos"
-        },
-        {
           "name": "Puzzle",
           "category": "Jogos"
         },
@@ -30,8 +26,9 @@ angular.module('appsModule', [])
         {
           "name": "Candy Crush",
           "category": "Jogos",
-          "subCategory": ["Puzzle", "Mais baixados"],
-          "desenvolvedor": "King"
+          "subCategory": ["Puzzle"],
+          "desenvolvedor": "King",
+          "mostDownloaded": true
         },
         {
           "name": "Pokémon GO",
@@ -42,8 +39,9 @@ angular.module('appsModule', [])
         {
           "name": "Minecraft",
           "category": "Jogos",
-          "subCategory": ["Simulação", "Mais baixados"],
-          "desenvolvedor": "Mojang"
+          "subCategory": ["Simulação"],
+          "desenvolvedor": "Mojang",
+          "mostDownloaded": true
         },
         {
           "name": "Facebook",
@@ -72,8 +70,9 @@ angular.module('appsModule', [])
         },
         {
           "name": "Evernote",
-          "category": "Produtividade",
-          "desenvolvedor": "Evernote Corporation"
+          "category": ["Produtividade"],
+          "desenvolvedor": "Evernote Corporation",
+          "mostDownloaded": true
         },
         {
           "name": "LinkedIn",
@@ -84,59 +83,81 @@ angular.module('appsModule', [])
     };
 
     //Adjust data
-    $scope.data.categories = $scope.data.categories.map(name => ({ name, expanded: false }));
+    $scope.data.categories = $scope.data.categories.map(name => ({ name, expanded: false, mostDownloaded: false }));
+    $scope.page = { category: 'Todos', subCategory: null, subCategories: [] };
 
-    //Variables
-    $scope.category = 'Todos';
-    $scope.subCategory;
-    $scope.subCategories = [];
+    isSameCategory = function (app, category) {
+      if (Array.isArray(app.category)) {
+        return app.category.includes(category.name);
+      } else {
+        return app.category === category.name;
+      }
+    }
+
+    isSameSubCategory = function (app, subCategory) {
+      if (subCategory) {
+        if (Array.isArray(app.subCategory)) {
+          return app.subCategory.includes(subCategory.name);
+        } else {
+          return app.subCategory === subCategory.name;
+        }
+      }
+
+      return true;
+    }
+
+    mostDownloadedApps = function () {
+      var filteredApps = $scope.data.apps.filter(app => app.mostDownloaded);
+
+      $scope.data.categories.forEach(category => {
+        filteredApps.forEach(app => {
+          if (isSameCategory(app, category)) {
+            category.mostDownloaded = true;
+          }
+        });
+      });
+    }
+
+
+    mostDownloadedApps();
 
     $scope.toggleCategory = function (category) {
-      $scope.subCategories = category.name !== 'Todos'
-        ? $scope.data.subCategories.filter(sub => sub.category === category.name)
-        : [];
+      $scope.page.category.expanded = false;
+      $scope.page.subCategories = [];
+      $scope.page.subCategory = null;
 
-      category.expanded = ($scope.subCategories.length > 0);
-      $scope.category = category.name;
-      $scope.subCategory = null;
+      if (category.name !== 'Todos') {
+        $scope.page.subCategories = $scope.data.subCategories.filter(sub => sub.category === category.name);
+
+        if (category.mostDownloaded) {
+          $scope.page.subCategories.unshift({ name: 'Mais baixados' });
+        }
+      }
+
+      $scope.page.category = category;
+      $scope.page.category.expanded = ($scope.page.subCategories.length > 0);
 
       if ($scope.hasDebugLog) {
         console.debug(`category=${JSON.stringify(category)}`);
         if (category.expanded) {
-          console.debug(`subCategories=${JSON.stringify($scope.subCategories)}`);
+          console.debug(`subCategories=${JSON.stringify($scope.page.subCategories)}`);
         }
       }
     };
 
     $scope.filterBySubCategory = function (subCategory) {
-      $scope.subCategory = subCategory.name;
+      $scope.page.subCategory = subCategory;
     };
 
-    $scope.searchCategories = function (app) {
-      if (Array.isArray(app.category)) {
-        return app.category.includes($scope.category)
-      } else {
-        return app.category === $scope.category
-      }
-    }
-
-    $scope.searchSubCategories = function (app) {
-      if ($scope.subCategory) {
-        if (Array.isArray(app.subCategory)) {
-          return (app.subCategory.includes($scope.subCategory))
+    $scope.filterApps = function (app) {
+      if ($scope.page.category.name === 'Todos') {
+        return true;
+      } else if (isSameCategory(app, $scope.page.category)) {
+        if ($scope.page.subCategory?.name === 'Mais baixados') {
+          return app.mostDownloaded;
         } else {
-          return (app.subCategory === $scope.subCategory)
+          return isSameSubCategory(app, $scope.page.subCategory);
         }
       }
-
-      return true;
-    }
-
-    $scope.filterApps = function (app) {
-      if ($scope.category !== 'Todos') {
-        return $scope.searchCategories(app) && $scope.searchSubCategories(app);
-      }
-
-      return true;
     };
   });
