@@ -3,9 +3,11 @@
 
 <head>
     <meta charset="UTF-8">
+    <link rel="stylesheet" href="appscontroller.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.8.2/angular.min.js"></script>
-    <script src="./appsData.js"></script>
-    <script src="./appsController.js"></script>
+    <script src="./appsconstants.js"></script>
+    <script src="./appsdata.js"></script>
+    <script src="./appscontroller.js"></script>
     <style>
         .subCategories {
             display: none;
@@ -51,6 +53,10 @@
         }
 
         /* Estilos para a barra de navegação */
+        .navbar-container {
+            display: flex;
+        }
+
         .navbar {
             overflow: hidden;
             background-color: #333;
@@ -63,22 +69,88 @@
             text-align: center;
             padding: 14px 16px;
             text-decoration: none;
+
         }
 
         .navbar a:hover {
             background-color: #ddd;
             color: black;
         }
+
+        .tab-content {
+            display: flex;
+            align-items: center;
+        }
+
+        .tab-content .tab-icon {
+            width: 20px;
+            height: 20px;
+            margin-right: 5px;
+        }
+
+        .tab-content .tab-icon svg {
+            width: 20px;
+            /* Defina a largura desejada para o ícone */
+            height: 20px;
+            /* Defina a altura desejada para o ícone */
+            vertical-align: middle;
+            margin-right: 5px;
+            /* Ajuste a margem direita conforme necessário */
+        }
+
+        .tab-content .tab-name {
+            font-weight: bold;
+        }
+
+        .app-container {
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #ccc;
+            margin: 10px 0;
+        }
+
+        .app-container .tab-icon {
+            width: 24px;
+            /* Defina a largura desejada para o ícone */
+            height: 24px;
+            /* Defina a altura desejada para o ícone */
+            margin-right: 10px;
+            /* Ajuste a margem direita conforme necessário */
+        }
+
+        .app-container .app-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .app-container .app-name {
+            font-weight: bold;
+        }
+
+        .app-container .app-developer {
+            color: gray;
+        }
     </style>
 </head>
 
 <body ng-controller="appsController">
-    <div class="navbar">
-        <a href="#" ng-click="setTab('highlights')">Destaques</a>
-        <a href="#" ng-click="setTab('recommended')">Recomendados</a>
+    <div class="navbar-container">
+        <div class="navbar" ng-repeat="tab in tabs">
+            <a href="#" ng-click="setTab(tab.id)">
+                <div class="tab-content">
+                    <span class="tab-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path ng-attr-d="{{tab.svg}}" />
+                        </svg>
+                    </span>
+                    <span class="tab-name">{{tab.name}}</span>
+                </div>
+            </a>
+        </div>
     </div>
 
-    <ul ng-show="page.showCategory">
+    <ul ng-show="page.tab.showCategory">
         <h2>Categorias:</h2>
         <ul>
             <li ng-repeat="category in data.categories">
@@ -95,9 +167,19 @@
 
     <h2>Aplicativos:</h2>
     <ul>
-        <li ng-repeat="app in data.apps | filter: filterApps">
-            {{app.name}} <br /> {{app.desenvolvedor}}
-            <hr>
+        <li ng-repeat="app in filterApps()">
+            <div class="app-container">
+                <span class="tab-icon" ng-if="app.svg">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path ng-attr-d="{{app.svg}}" />
+                    </svg>
+                </span>
+                <div class="app-info">
+                    <span class="app-name">{{app.name}}</span>
+                    <span class="app-developer">{{app.developer}}</span>
+                </div>
+            </div>
         </li>
     </ul>
 </body>

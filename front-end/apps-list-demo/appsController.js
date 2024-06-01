@@ -1,16 +1,26 @@
 angular.module('appsModule', [])
-  .controller('appsController', function ($scope) {
+  .controller('appsController', ['$scope', '$sce', function ($scope, $sce) {
     $scope.hasDebugLog = ($scope.$log && $scope.$log.debugEnabled());
     $scope.data = appData;
-    $scope.data.categories = $scope.data.categories.map(name => ({ name, expanded: false, highlights: false, mostDownloaded: false }));
-    $scope.page = { tab: 'highlights', showCategory: false, category: 'Todos', subCategory: null, subCategories: [] };
+    $scope.tabs = tabs;
 
-    $scope.setTab = function (name) {
-      $scope.page.tab = name;
-      $scope.page.showCategory = ('recommended' === name);
+    $scope.data.categories = $scope.data.categories.map(
+      category => ({ ...category, expanded: false, mostDownloaded: false })
+    );
+
+    $scope.data.categories.unshift(RECOMMENDED);
+
+    $scope.page = {
+      tab: HIGHLIGHTS,
+      hasHighlights: false,
+      hasRecommended: false,
+      category: $scope.data.categories[0],
+      subCategory: null,
+      subCategories: [],
     };
 
-    hasDataInObject = function (object, data) {
+    /* Local functions begin*/
+    var hasDataInObject = function (object, data) {
       if (Array.isArray(object)) {
         return object.includes(data);
       } else {
@@ -18,25 +28,19 @@ angular.module('appsModule', [])
       }
     }
 
-    isSameSubCategory = function (app, subCategory) {
-      if (subCategory) {
-        return hasDataInObject(app.subCategory, subCategory.name);
-      }
-
-      return true;
-    }
-
-    classifiedApps = function () {
-      var filteredApps = $scope.data.apps.filter(app => app.tags);
+    var classifyApps = function () {
+      var filteredApps = $scope.data.apps.filter(app => app.tags?.length > 0);
 
       $scope.data.categories.forEach(category => {
         filteredApps.forEach(app => {
-          if (hasDataInObject(app.category, category.name)) {
-            if (hasDataInObject(app.tags, 'highlights')) {
-              category.highlights = true;
+          if (hasDataInObject(app.category, category.id)) {
+            if (!$scope.page.hasHighlights) {
+              $scope.page.hasHighlights = hasDataInObject(app.tags, HIGHLIGHTS.tag);
             }
-
-            if (hasDataInObject(app.tags, 'mostDownloaded')) {
+            if (!$scope.page.hasRecommended) {
+              $scope.page.hasRecommended = hasDataInObject(app.tags, RECOMMENDED.tag);
+            }
+            if (hasDataInObject(app.tags, SC_MOST_DOWNLOADED.tag)) {
               category.mostDownloaded = true;
             }
           }
@@ -44,19 +48,56 @@ angular.module('appsModule', [])
       });
     }
 
+    var filterRecomendedTab = function (app) {
+      if ($scope.page.category.name === RECOMMENDED.name) {
+        return $scope.page.hasRecommended ?
+          hasDataInObject(app.tags, RECOMMENDED.tag) : true;
+      } else if (hasDataInObject(app.category, $scope.page.category.id)) {
+        if ($scope.page.subCategory?.id === SC_MOST_DOWNLOADED.id) {
+          return hasDataInObject(app.tags, SC_MOST_DOWNLOADED.tag);
+        } else if ($scope.page.subCategory) {
+          return hasDataInObject(app.subCategory, $scope.page.subCategory.id);
+        } else {
+          return true;
+        }
+      }
 
-    classifiedApps();
+      return false;
+    }
+
+    var filterHighlightTab = function (app) {
+      return $scope.page.hasHighlights ?
+        hasDataInObject(app.tags, HIGHLIGHTS.tag) : true;
+    }
+
+    classifyApps();
+
+    /* Scoped functions begin */
+    $scope.getTrustedHtml = function (html) {
+      return $sce.trustAsHtml(html);
+    };
+
+    $scope.setTab = function (id) {
+      if ($scope.page.tab.id !== id) {
+        $scope.page.tab = tabs.find(tab => tab.id === id);
+
+        if ($scope.hasDebugLog) {
+          console.info(`##### setTab(${$scope.page.tab.name})`)
+        }
+      }
+    };
 
     $scope.toggleCategory = function (category) {
       $scope.page.category.expanded = false;
       $scope.page.subCategories = [];
       $scope.page.subCategory = null;
 
-      if (category.name !== 'Todos') {
-        $scope.page.subCategories = $scope.data.subCategories.filter(sub => sub.category === category.name);
+      if (category.name !== RECOMMENDED.name) {
+        $scope.page.subCategories =
+          $scope.data.subCategories.filter(sub => sub.category === category.id);
 
         if (category.mostDownloaded) {
-          $scope.page.subCategories.unshift({ name: 'Mais baixados' });
+          $scope.page.subCategories.unshift(SC_MOST_DOWNLOADED);
         }
       }
 
@@ -76,16 +117,15 @@ angular.module('appsModule', [])
     };
 
     $scope.filterApps = function (app) {
-      if ($scope.page.category.name === 'Todos') {
-        return true;
-      } else if (hasDataInObject(app.category, $scope.page.category.name)) {
-        if ($scope.page.subCategory?.name === 'Mais baixados') {
-          return hasDataInObject(app.tags, 'mostDownloaded');
-        } else {
-          return isSameSubCategory(app.category, $scope.page.subCategory);
-        }
-      } else {
-        return false;
+      switch ($scope.page.tab.id) {
+        case HIGHLIGHTS.id:
+          return $scope.data.apps.filter(app => filterHighlightTab(app));
+        case RECOMMENDED.id:
+          return $scope.data.apps.filter(app => filterRecomendedTab(app));
+        default:
+          return [];
       }
     };
-  });
+
+    /* Scoped functions end */
+  }]);
