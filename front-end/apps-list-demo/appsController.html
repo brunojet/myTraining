@@ -46,11 +46,8 @@
     <ul>
         <li ng-repeat="app in filterApps()">
             <div class="app-container">
-                <span class="tab-icon" ng-if="app.svg">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round">
-                        <path ng-attr-d="{{app.svg}}" />
-                    </svg>
+                <span ng-if="app.icon">
+                    <img src="svg/{{app.icon}}">
                 </span>
                 <div class="app-info">
                     <span class="app-name">{{app.name}}</span>

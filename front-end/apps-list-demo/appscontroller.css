@@ -70,20 +70,11 @@ hr {
   align-items: center;
 }
 
-.tab-content .tab-icon {
-  width: 20px;
-  height: 20px;
-  margin-right: 5px;
-}
-
 .tab-content .tab-icon svg {
   width: 20px;
-  /* Defina a largura desejada para o ícone */
   height: 20px;
-  /* Defina a altura desejada para o ícone */
   vertical-align: middle;
   margin-right: 5px;
-  /* Ajuste a margem direita conforme necessário */
 }
 
 .tab-content .tab-name {
@@ -97,13 +88,10 @@ hr {
   margin: 10px 0;
 }
 
-.app-container .tab-icon {
+.app-container img {
   width: 24px;
-  /* Defina a largura desejada para o ícone */
   height: 24px;
-  /* Defina a altura desejada para o ícone */
   margin-right: 10px;
-  /* Ajuste a margem direita conforme necessário */
 }
 
 .app-container .app-info {
