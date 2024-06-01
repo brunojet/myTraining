@@ -1,5 +1,5 @@
 angular.module('appsModule', [])
-  .controller('appsController', ['$scope', '$sce', function ($scope, $sce) {
+  .controller('appsController', ['$scope', function ($scope) {
     $scope.hasDebugLog = ($scope.$log && $scope.$log.debugEnabled());
     $scope.data = appData;
     $scope.tabs = tabs;
@@ -73,9 +73,6 @@ angular.module('appsModule', [])
     classifyApps();
 
     /* Scoped functions begin */
-    $scope.getTrustedHtml = function (html) {
-      return $sce.trustAsHtml(html);
-    };
 
     $scope.setTab = function (id) {
       if ($scope.page.tab.id !== id) {
@@ -85,6 +82,10 @@ angular.module('appsModule', [])
           console.info(`##### setTab(${$scope.page.tab.name})`)
         }
       }
+    };
+
+    $scope.isTabSelected = function (tabId) {
+      return $scope.page.tab.id === tabId;
     };
 
     $scope.toggleCategory = function (category) {

@@ -13,7 +13,7 @@
 <body ng-controller="appsController">
     <div class="navbar-container">
         <div class="navbar" ng-repeat="tab in tabs">
-            <a href="#" ng-click="setTab(tab.id)">
+            <a href="#" ng-click="setTab(tab.id)" ng-class="{ 'selected': isTabSelected(tab.id) }">
                 <div class="tab-content">
                     <span class="tab-icon">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -28,7 +28,6 @@
     </div>
 
     <ul ng-show="page.tab.showCategory">
-        <h2>Categorias:</h2>
         <ul>
             <li ng-repeat="category in data.categories">
                 <button ng-click="toggleCategory(category)">{{category.name}}</button>
@@ -42,7 +41,6 @@
         </ul>
     </ul>
 
-    <h2>Aplicativos:</h2>
     <ul>
         <li ng-repeat="app in filterApps()">
             <div class="app-container">
@@ -54,6 +52,7 @@
                     <span class="app-developer">{{app.developer}}</span>
                 </div>
             </div>
+            <hr>
         </li>
     </ul>
 </body>
