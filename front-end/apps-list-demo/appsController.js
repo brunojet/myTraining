@@ -8,7 +8,7 @@ angular.module('appsModule', [])
       category => ({ ...category, expanded: false, mostDownloaded: false })
     );
 
-    $scope.data.categories.unshift(RECOMMENDED);
+    $scope.data.categories.unshift(c_RECOMMENDED);
 
     $scope.page = {
       tab: HIGHLIGHTS,

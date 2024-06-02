@@ -5,10 +5,10 @@ angular.module('appsModule', [])
     $scope.tabs = tabs;
 
     $scope.data.categories = $scope.data.categories.map(
-      category => ({ ...category, expanded: false, mostDownloaded: false })
+      category => ({ ...category, expanded: false, hasSubCategory: false, noHasSubCategory: false, mostDownloaded: false })
     );
 
-    $scope.data.categories.unshift(RECOMMENDED);
+    $scope.data.categories.unshift(C_RECOMMENDED);
 
     $scope.page = {
       tab: HIGHLIGHTS,
@@ -20,7 +20,7 @@ angular.module('appsModule', [])
     };
 
     /* Local functions begin*/
-    var hasDataInObject = function (object, data) {
+    const hasDataInObject = function (object, data) {
       if (Array.isArray(object)) {
         return object.includes(data);
       } else {
@@ -28,12 +28,36 @@ angular.module('appsModule', [])
       }
     }
 
-    var classifyApps = function () {
+    const scValidate = function (category, app, scOtherId) {
+      if (app.subCategory?.length > 0) {
+        category.hasSubCategory = true;
+      } else {
+        category.noHasSubCategory = true;
+        app.subCategory = scOtherId;
+      }
+    }
+
+    const setScOther = function (category, scOtherId) {
+      if (category.noHasSubCategory) {
+        var scOther = JSON.parse(SC_OTHER_TEMPLATE);
+        scOther.id = scOtherId++;
+        scOther.category = category.id;
+        $scope.data.subCategories.push(scOther);
+        scOtherId++;
+      }
+
+      return scOtherId;
+    }
+
+    const classifyApps = function () {
       var filteredApps = $scope.data.apps.filter(app => app.tags?.length > 0);
+      var lastScOtherId = SC_OTHER_ID;
 
       $scope.data.categories.forEach(category => {
         filteredApps.forEach(app => {
           if (hasDataInObject(app.category, category.id)) {
+            scValidate(category, app, lastScOtherId);
+
             if (!$scope.page.hasHighlights) {
               $scope.page.hasHighlights = hasDataInObject(app.tags, HIGHLIGHTS.tag);
             }
@@ -45,27 +69,30 @@ angular.module('appsModule', [])
             }
           }
         });
+
+        lastScOtherId = setScOther(category, lastScOtherId);
       });
     }
 
-    var filterRecomendedTab = function (app) {
+    const filterRecomendedTab = function (app) {
       if ($scope.page.category.name === RECOMMENDED.name) {
         return $scope.page.hasRecommended ?
           hasDataInObject(app.tags, RECOMMENDED.tag) : true;
       } else if (hasDataInObject(app.category, $scope.page.category.id)) {
-        if ($scope.page.subCategory?.id === SC_MOST_DOWNLOADED.id) {
-          return hasDataInObject(app.tags, SC_MOST_DOWNLOADED.tag);
-        } else if ($scope.page.subCategory) {
-          return hasDataInObject(app.subCategory, $scope.page.subCategory.id);
-        } else {
-          return true;
+        if ($scope.page.category.hasSubCategory) {
+          if ($scope.page.subCategory) {
+            return hasDataInObject(app.subCategory, $scope.page.subCategory.id);
+          } else if ($scope.page.category.hasSubCategory && $scope.page.category.mostDownloaded) {
+            return hasDataInObject(app.tags, SC_MOST_DOWNLOADED.tag);
+          }
         }
+        return true;
       }
 
       return false;
     }
 
-    var filterHighlightTab = function (app) {
+    const filterHighlightTab = function (app) {
       return $scope.page.hasHighlights ?
         hasDataInObject(app.tags, HIGHLIGHTS.tag) : true;
     }
@@ -89,20 +116,10 @@ angular.module('appsModule', [])
     };
 
     $scope.toggleCategory = function (category) {
-      if ($scope.page.category !== category) {
-        $scope.page.subCategories = [];
-        $scope.page.subCategory = null;
-        $scope.page.category.expanded = false;
-      }
-
       if (!$scope.page.category.expanded) {
         if (category.name !== RECOMMENDED.name) {
           $scope.page.subCategories =
             $scope.data.subCategories.filter(sub => sub.category === category.id);
-
-          if (category.mostDownloaded) {
-            $scope.page.subCategories.unshift(SC_MOST_DOWNLOADED);
-          }
         }
 
         $scope.page.category = category;
@@ -115,6 +132,8 @@ angular.module('appsModule', [])
           }
         }
       } else {
+        $scope.page.subCategories = [];
+        $scope.page.subCategory = null;
         $scope.page.category.expanded = false;
       }
     };
