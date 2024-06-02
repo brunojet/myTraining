@@ -54,9 +54,7 @@ angular.module('appsModule', [])
 
         filteredApps.forEach(app => {
           if (hasDataInObject(app.category, category.id)) {
-            if (!hasSubCategory) {
-              hasSubCategory = scValidate(category, app, lastScOtherId);
-            }
+            hasSubCategory |= scValidate(category, app, lastScOtherId);
 
             if (!$scope.page.hasHighlights) {
               $scope.page.hasHighlights = hasDataInObject(app.tags, HIGHLIGHTS.tag);
