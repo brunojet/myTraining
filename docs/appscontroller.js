@@ -5,10 +5,8 @@ angular.module('appsModule', [])
     $scope.tabs = tabs;
 
     $scope.data.categories = $scope.data.categories.map(
-      category => ({ ...category, expanded: false, hasSubCategory: false, noHasSubCategory: false, mostDownloaded: false })
+      category => ({ ...category, expanded: false, hasSubCategory: false, mostDownloaded: false })
     );
-
-    $scope.data.categories.unshift(C_RECOMMENDED);
 
     $scope.page = {
       tab: HIGHLIGHTS,
@@ -29,24 +27,22 @@ angular.module('appsModule', [])
     }
 
     const scValidate = function (category, app, scOtherId) {
-      if (app.subCategory?.length > 0) {
+      var hasSubCategory = (app.subCategory?.length > 0);
+
+      if (hasSubCategory) {
         category.hasSubCategory = true;
       } else {
-        category.noHasSubCategory = true;
         app.subCategory = scOtherId;
       }
+
+      return hasSubCategory;
     }
 
     const setScOther = function (category, scOtherId) {
-      if (category.noHasSubCategory) {
-        var scOther = JSON.parse(SC_OTHER_TEMPLATE);
-        scOther.id = scOtherId++;
-        scOther.category = category.id;
-        $scope.data.subCategories.push(scOther);
-        scOtherId++;
-      }
-
-      return scOtherId;
+      var scOther = JSON.parse(SC_OTHER_TEMPLATE);
+      scOther.id = scOtherId++;
+      scOther.category = category.id;
+      $scope.data.subCategories.push(scOther);
     }
 
     const classifyApps = function () {
@@ -54,9 +50,13 @@ angular.module('appsModule', [])
       var lastScOtherId = SC_OTHER_ID;
 
       $scope.data.categories.forEach(category => {
+        var hasSubCategory = false;
+
         filteredApps.forEach(app => {
           if (hasDataInObject(app.category, category.id)) {
-            scValidate(category, app, lastScOtherId);
+            if (!hasSubCategory) {
+              hasSubCategory = scValidate(category, app, lastScOtherId);
+            }
 
             if (!$scope.page.hasHighlights) {
               $scope.page.hasHighlights = hasDataInObject(app.tags, HIGHLIGHTS.tag);
@@ -70,8 +70,12 @@ angular.module('appsModule', [])
           }
         });
 
-        lastScOtherId = setScOther(category, lastScOtherId);
+        if (!hasSubCategory) {
+          setScOther(category, lastScOtherId++);
+        }
       });
+
+      $scope.data.categories.unshift(C_RECOMMENDED);
     }
 
     const filterRecomendedTab = function (app) {
