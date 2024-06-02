@@ -16,7 +16,7 @@ angular.module('appsModule', [])
       hasRecommended: false,
       category: $scope.data.categories[0],
       subCategory: null,
-      subCategories: [],
+      subCategories: []
     };
 
     /* Local functions begin*/
@@ -89,27 +89,33 @@ angular.module('appsModule', [])
     };
 
     $scope.toggleCategory = function (category) {
-      $scope.page.category.expanded = false;
-      $scope.page.subCategories = [];
-      $scope.page.subCategory = null;
-
-      if (category.name !== RECOMMENDED.name) {
-        $scope.page.subCategories =
-          $scope.data.subCategories.filter(sub => sub.category === category.id);
-
-        if (category.mostDownloaded) {
-          $scope.page.subCategories.unshift(SC_MOST_DOWNLOADED);
-        }
+      if ($scope.page.category !== category) {
+        $scope.page.subCategories = [];
+        $scope.page.subCategory = null;
+        $scope.page.category.expanded = false;
       }
 
-      $scope.page.category = category;
-      $scope.page.category.expanded = ($scope.page.subCategories.length > 0);
+      if (!$scope.page.category.expanded) {
+        if (category.name !== RECOMMENDED.name) {
+          $scope.page.subCategories =
+            $scope.data.subCategories.filter(sub => sub.category === category.id);
 
-      if ($scope.hasDebugLog) {
-        console.debug(`category=${JSON.stringify(category)}`);
-        if (category.expanded) {
-          console.debug(`subCategories=${JSON.stringify($scope.page.subCategories)}`);
+          if (category.mostDownloaded) {
+            $scope.page.subCategories.unshift(SC_MOST_DOWNLOADED);
+          }
         }
+
+        $scope.page.category = category;
+        $scope.page.category.expanded = ($scope.page.subCategories.length > 0);
+
+        if ($scope.hasDebugLog) {
+          console.debug(`category=${JSON.stringify(category)}`);
+          if (category.expanded) {
+            console.debug(`subCategories=${JSON.stringify($scope.page.subCategories)}`);
+          }
+        }
+      } else {
+        $scope.page.category.expanded = false;
       }
     };
 
