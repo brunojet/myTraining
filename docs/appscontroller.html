@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html ng-app="appsModule">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="appscontroller.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.8.2/angular.min.js"></script>
+    <script src="./appsconstants.js"></script>
+    <script src="./appsdata.js"></script>
+    <script src="./appscontroller.js"></script>
+</head>
+
+<body ng-controller="appsController">
+    <div class="navbar-container">
+        <div class="navbar" ng-repeat="tab in tabs">
+            <a href="#" ng-click="setTab(tab.id)" ng-class="{ 'selected': isTabSelected(tab.id) }">
+                <div class="tab-content">
+                    <span class="tab-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path ng-attr-d="{{tab.svg}}" />
+                        </svg>
+                    </span>
+                    <span class="tab-name">{{tab.name}}</span>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <ul ng-show="page.tab.showCategory">
+        <ul>
+            <li ng-repeat="category in data.categories">
+                <button ng-click="toggleCategory(category)">{{category.name}}</button>
+                <ul class="subCategories" ng-class="{'expanded': category.expanded}">
+                    <li ng-repeat="subCategory in page.subCategories">
+                        <button ng-click="filterBySubCategory(subCategory)">{{subCategory.name}}</button>
+                    </li>
+                </ul>
+                <hr>
+            </li>
+        </ul>
+    </ul>
+
+    <ul>
+        <li ng-repeat="app in filterApps()">
+            <div class="app-container">
+                <span ng-if="app.icon">
+                    <img ng-src="svg/{{app.icon}}" alt="No image">
+                </span>
+                <div class="app-info">
+                    <span class="app-name">{{app.name}}</span>
+                    <span class="app-developer">{{app.developer}}</span>
+                </div>
+            </div>
+            <hr>
+        </li>
+    </ul>
+</body>
+
+</html>

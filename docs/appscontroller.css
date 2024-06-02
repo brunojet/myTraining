@@ -1,0 +1,119 @@
+/* Estilos base */
+.subCategories {
+  display: none;
+  margin-left: 20px;
+}
+
+.expanded {
+  display: block;
+}
+
+/* Botões com tamanho dinâmico e responsivo */
+button {
+  background-color: #4caf50;
+  color: white;
+  padding: 1% 2%; /* Usando porcentagem para o padding */
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 4vw; /* Tamanho da fonte baseado na largura da viewport */
+  margin: 1% 1%;
+  cursor: pointer;
+  border-radius: 10px;
+}
+
+button:hover {
+  background-color: #45a049;
+}
+
+ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+li {
+  margin: 5px 0;
+}
+
+hr {
+  border: 0;
+  height: 1px;
+  background: #333;
+  margin: 10px 0;
+}
+
+/* Barra de navegação responsiva */
+.navbar-container {
+  display: flex;
+  /* flex-wrap: wrap; */
+  background-color: #333;
+  justify-content: space-around;
+}
+
+.navbar {
+  flex: 1 0 auto;
+  overflow: hidden;
+  background-color: #333;
+  min-width: 150px;
+  max-width: 400px;
+}
+
+.navbar a {
+  display: block;
+  color: #f2f2f2;
+  text-align: center;
+  padding: 1.4vw 1.6vw; /* Unidades relativas para o padding */
+  text-decoration: none;
+  font-size: 3.5vw; /* Tamanho dinâmico da fonte */
+}
+
+/* Classe para aba selecionada */
+.navbar a.selected {
+  background-color: #ddd; /* Cor de fundo para aba selecionada */
+  color: black;
+}
+
+.tab-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.tab-content .tab-icon svg {
+  width: 5vw; /* Ajuste baseado na largura da viewport */
+  height: auto; /* Mantém a proporção da imagem */
+  vertical-align: middle;
+  margin-right: 5px;
+}
+
+.tab-content .tab-name {
+  font-weight: bold;
+  font-size: 5vw;
+}
+
+/* Container de aplicativos com tamanho dinâmico */
+.app-container {
+  display: flex;
+  align-items: center;
+  margin: 10px 0;
+}
+
+.app-container img {
+  width: 20vw; /* Ajuste baseado na largura da viewport */
+  height: auto; /* Mantém a proporção da imagem */
+  margin-right: 10px;
+}
+
+.app-container .app-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.app-container .app-name {
+  font-weight: bold;
+  font-size: 6vw;
+}
+
+.app-container .app-developer {
+  color: gray;
+  font-size: 5vw;
+}
