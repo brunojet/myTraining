@@ -118,14 +118,20 @@ angular.module('appsModule', [])
     };
 
     $scope.filterApps = function (app) {
+      var apps = [];
+
       switch ($scope.page.tab.id) {
         case HIGHLIGHTS.id:
-          return $scope.data.apps.filter(app => filterHighlightTab(app));
+          apps = $scope.data.apps.filter(app => filterHighlightTab(app));
+          break;
         case RECOMMENDED.id:
-          return $scope.data.apps.filter(app => filterRecomendedTab(app));
+          apps = $scope.data.apps.filter(app => filterRecomendedTab(app));
+          break;
         default:
-          return [];
+          break;
       }
+
+      return apps;
     };
 
     /* Scoped functions end */

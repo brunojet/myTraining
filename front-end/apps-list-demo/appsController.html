@@ -45,7 +45,7 @@
         <li ng-repeat="app in filterApps()">
             <div class="app-container">
                 <span ng-if="app.icon">
-                    <img src="svg/{{app.icon}}">
+                    <img ng-src="svg/{{app.icon}}" alt="No image">
                 </span>
                 <div class="app-info">
                     <span class="app-name">{{app.name}}</span>
